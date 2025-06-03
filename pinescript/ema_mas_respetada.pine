@@ -1,0 +1,80 @@
+//@version=5
+indicator("EMA más respetada entre 8 EMAs", overlay=true)
+
+lookback   = input.int(150, "Velas a mirar", minval=20)
+tolerancia = input.float(0.3, "Tolerancia en %", step=0.1)
+
+ema1Len = input.int(9,  "Longitud EMA 1")
+ema2Len = input.int(21, "Longitud EMA 2")
+ema3Len = input.int(50, "Longitud EMA 3")
+ema4Len = input.int(100, "Longitud EMA 4")
+ema5Len = input.int(120, "Longitud EMA 5")
+ema6Len = input.int(150, "Longitud EMA 6")
+ema7Len = input.int(200, "Longitud EMA 7")
+ema8Len = input.int(250, "Longitud EMA 8")
+
+ema1 = ta.ema(close, ema1Len)
+ema2 = ta.ema(close, ema2Len)
+ema3 = ta.ema(close, ema3Len)
+ema4 = ta.ema(close, ema4Len)
+ema5 = ta.ema(close, ema5Len)
+ema6 = ta.ema(close, ema6Len)
+ema7 = ta.ema(close, ema7Len)
+ema8 = ta.ema(close, ema8Len)
+
+getRebotes(serie, tol) =>
+    rebotes = 0
+    for i = 1 to lookback
+        diff = math.abs(close[i] - serie[i]) / serie[i] * 100
+        if diff <= tol
+            rebotes := rebotes + 1
+    rebotes
+
+r1 = getRebotes(ema1, tolerancia)
+r2 = getRebotes(ema2, tolerancia)
+r3 = getRebotes(ema3, tolerancia)
+r4 = getRebotes(ema4, tolerancia)
+r5 = getRebotes(ema5, tolerancia)
+r6 = getRebotes(ema6, tolerancia)
+r7 = getRebotes(ema7, tolerancia)
+r8 = getRebotes(ema8, tolerancia)
+
+mejor    = ema1
+contador = r1
+texto    = "EMA " + str.tostring(ema1Len)
+
+if r2 > contador
+    mejor := ema2
+    contador := r2
+    texto := "EMA " + str.tostring(ema2Len)
+if r3 > contador
+    mejor := ema3
+    contador := r3
+    texto := "EMA " + str.tostring(ema3Len)
+if r4 > contador
+    mejor := ema4
+    contador := r4
+    texto := "EMA " + str.tostring(ema4Len)
+if r5 > contador
+    mejor := ema5
+    contador := r5
+    texto := "EMA " + str.tostring(ema5Len)
+if r6 > contador
+    mejor := ema6
+    contador := r6
+    texto := "EMA " + str.tostring(ema6Len)
+if r7 > contador
+    mejor := ema7
+    contador := r7
+    texto := "EMA " + str.tostring(ema7Len)
+if r8 > contador
+    mejor := ema8
+    contador := r8
+    texto := "EMA " + str.tostring(ema8Len)
+
+var label emaLabel = na
+
+if bar_index == lookback
+    emaLabel := label.new(bar_index, high, "EMA ganadora: " + texto, style=label.style_label_down, textcolor=color.white, size=size.small, color=color.green)
+
+plot(mejor, color=color.orange, title="EMA más respetada", linewidth=2)
